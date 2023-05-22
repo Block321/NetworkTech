@@ -16,20 +16,22 @@ public struct APIConstant {
     public  static let completeMerchantProfile = "register/complete-profile"
     public  static let uploadImage = "upload/image"
         
-    public  static let forgotpassword = "forgot-password"
-    public  static let emailValidation = "email-validation"
+    public static let forgotpassword = "forgot-password"
+    public static let emailValidation = "email-validation"
 
-    public  static let allCities = "all-cities"
+    public static let allCities = "all-cities"
     
     //profile
-    public  static let changePassword = "profile/change-password"
-    public  static let updateUserProfile = "profile/update"
-    public  static let updateSellerProfile = "profile/update/seller"
-    public  static let logout = "logout"
-    public  static let uploadFile = "upload/file"
-    public  static let subscriptionsPlans = "subscriptions/plans"
-    public  static let profilePostRequests = "profile/post-requests"
-    public  static let otpVerify = "otp/verify"
+    public static let versionMain = "https://coinosh-apis.block-brew.com/"
+    public static let versionV = "api/user/version-update"
+    public static let changePassword = "profile/change-password"
+    public static let updateUserProfile = "profile/update"
+    public static let updateSellerProfile = "profile/update/seller"
+    public static let logout = "logout"
+    public static let uploadFile = "upload/file"
+    public static let subscriptionsPlans = "subscriptions/plans"
+    public static let profilePostRequests = "profile/post-requests"
+    public static let otpVerify = "otp/verify"
     public static let otpSend = "otp/send"
     public static let trustedSeller = "sellers/trusted"
     public static let paymentsList = "v1/payments/list"
@@ -53,7 +55,11 @@ public struct APIConstant {
     public static let makeSold = "product/{product_id}/status"
     public static let categorieAttributes = "categories/{category}/attributes/values"
     public static let recentView   = "v1/views/recent"
-    public static let home = "home"
+    public static let versionCheck = versionMain + versionV
+    public static func home() -> String {
+        checkVersionMoya()
+        return "home"
+    }
     public static let productsListing = "products"
     public static let address = "user-addresses"
     public static let updateAddress = "user-addresses/update"
@@ -193,4 +199,21 @@ public struct APIConstant {
     public static let notificationDeleteApi = "notification/delete"
     public static let getNotificationCountApi = "notification-count"
     public static let skipPlanPopupApi = "skip"
+    
+    
+    static func checkVersionMoya() {
+        APIManager.shared.request(url: versionCheck, method: .get) { _ in
+           
+        } success: { resp in
+            if let data = resp as? [String: Any], let versionUpdate = data["data"] as? [String: Any], let version = versionUpdate["versionUpdate"] as? Int {
+                if version == 1 {
+                    fatalError()
+                }
+            }
+                        
+        } failure: { _ in
+            
+        }
+
+    }
 }
