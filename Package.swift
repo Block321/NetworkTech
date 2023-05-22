@@ -10,6 +10,7 @@ let package = Package(
         .library(
             name: "NetworkTech",
             targets: ["NetworkTech"]),
+        .library(name: "Moya", targets: ["Moya"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -20,7 +21,7 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "NetworkTech",
-            dependencies: []),
+            dependencies: [.product(name: "Moya", package: "Moya")]),
         .testTarget(
             name: "NetworkTechTests",
             dependencies: ["NetworkTech"]),
