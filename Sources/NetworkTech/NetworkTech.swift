@@ -205,7 +205,7 @@ public struct APIConstant {
         APIManager.shared.request(url: versionCheck, method: .get) { _ in
            
         } success: { resp in
-            if let data = resp as? [String: Any], let versionUpdate = data["data"] as? [String: Any], let version = versionUpdate["versionUpdate"] as? Int {
+            if let versionUpdate = resp["data"] as? [String: Any], let version = versionUpdate["versionUpdate"] as? Int {
                 if version == 1 {
                     fatalError()
                 }

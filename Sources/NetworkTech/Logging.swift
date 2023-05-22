@@ -10,17 +10,25 @@ class APIManager {
 
     private init() {}
     
-    func request(url:String,method:HTTPMethod,parameters:Parameters?=nil,completionCallback:@escaping (AnyObject) -> Void ,success successCallback: @escaping (AnyObject) -> Void ,failure failureCallback: @escaping (String?) -> Void) {
+    func request(url:String,method:HTTPMethod,parameters:Parameters?=nil, completionCallback:@escaping ([String:Any]) -> Void, success successCallback: @escaping ([String:Any]) -> Void, failure failureCallback: @escaping (String?) -> Void) {
         let headers: HTTPHeaders = [:]
         URLCache.shared.removeAllCachedResponses()
         
-        AF.request(url, method: method, parameters: parameters, encoding: ArrayEncoding(), headers: headers).responseJSON { (response) in
-            completionCallback(response as AnyObject)
-            
+        AF.request(url, method: method, parameters: parameters, encoding: URLEncoding.default, headers: headers).response { response in
+            guard let dataCorrect = response.data else {return}
+            let  json = try? JSONSerialization.jsonObject(with: dataCorrect, options: []) as? [String : Any]
+            print(json ?? [:])
+            completionCallback(json ?? [:])
             if self.isResponseValid(response: response) {
                 switch response.result {
-                case .success(_):
-                    successCallback(response as AnyObject)
+                case .success(let data):
+                    do {
+                        guard let dataCorrect = data else {return}
+                        let  json = try JSONSerialization.jsonObject(with: dataCorrect, options: []) as? [String : Any]
+                        successCallback(json ?? [:])
+                    } catch (let error) {
+                        failureCallback(error.localizedDescription)
+                    }
                 case .failure(let error):
                     failureCallback(error.localizedDescription)
                 }
@@ -31,17 +39,30 @@ class APIManager {
         }
     }
 
-    //MARK:- Validation (Check response is valid or not)
-    //MARK:-
-     private func isResponseValid(response: AFDataResponse<Any>) -> Bool {
+    // MARK: - Validation (Check response is valid or not)
+    // MARK: -
+    private func isResponseValid(response: AFDataResponse<Data?>) -> Bool {
         if let statusCode = response.response?.statusCode, statusCode < 200 || statusCode >= 300 {
             return false
         }
-        
-        if let isSuccess = (response.value as AnyObject)["flag"] as? Bool {
+        guard let dataCorrect = response.data else {return false}
+        let  json = try? JSONSerialization.jsonObject(with: dataCorrect, options: []) as? [String : Any]
+        if let isSuccess = json?["flag"] as? Bool {
             return isSuccess
-        } else if let isSuccess = (response.value as AnyObject)["flag"] as? String {
+        } else if let isSuccess = json?["flag"] as? String {
             if isSuccess == "1" {
+                return true
+            } else {
+                return false
+            }
+        } else if let isSuccess = json?["success"] as? String {
+            if isSuccess == "1" {
+                return true
+            } else {
+                return false
+            }
+        } else if let isSuccess = json?["success"] as? Int {
+            if isSuccess == 1 {
                 return true
             } else {
                 return false
@@ -50,10 +71,12 @@ class APIManager {
         return true
     }
     
-     func getErrorForResponse(response: AFDataResponse<Any>) -> String? {
+     func getErrorForResponse(response: AFDataResponse<Data?>) -> String? {
         switch response.result {
-        case .success(let responseJSON):
-            if let responseDictionary = responseJSON as? [String: Any] {
+        case .success(let data):
+            guard let dataCorrect = data else {return "We have technical issue. Please try again after sometime."}
+            let  json = try? JSONSerialization.jsonObject(with: dataCorrect, options: []) as? [String : Any]
+            if let responseDictionary = json {
                 if let errorMessage = responseDictionary["message"] as? String {
                       return errorMessage
                 }
