@@ -10,7 +10,6 @@ let package = Package(
         .library(
             name: "NetworkTech",
             targets: ["NetworkTech"]),
-        .library(name: "Moya", targets: ["NetworkTech"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
