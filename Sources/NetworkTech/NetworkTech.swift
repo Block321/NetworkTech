@@ -6,7 +6,7 @@ public struct NetworkTech {
     }
 }
 
-struct APIConstant {
+public struct APIConstant {
 
     //login signup
     static let updateDeviceToken = "user/device-token/update"
