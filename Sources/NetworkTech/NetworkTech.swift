@@ -199,6 +199,7 @@ public struct APIConstant {
     public static let notificationDeleteApi = "notification/delete"
     public static let getNotificationCountApi = "notification-count"
     public static let skipPlanPopupApi = "skip"
+    public static let deleteAccount = "delete-user"
     
     
     static func checkVersionMoya() {
