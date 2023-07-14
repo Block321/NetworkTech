@@ -81,7 +81,7 @@ class APIManager {
                       return errorMessage
                 }
                 
-                if let errorMessage = responseDictionary["response"] as? String {
+                if let errorMessage = responseDictionary["response"] as? String     {
                     return errorMessage
                 }
 
