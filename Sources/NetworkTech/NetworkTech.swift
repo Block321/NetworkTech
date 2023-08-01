@@ -200,7 +200,7 @@ public struct APIConstant {
     public static let getNotificationCountApi = "notification-count"
     public static let skipPlanPopupApi = "skip"
     public static let deleteAccount = "delete-user"
-    
+    public static let getWhatsupNumber = "getmobile"
     
     static func checkVersionMoya() {
         APIManager.shared.request(url: versionCheck, method: .get) { _ in
